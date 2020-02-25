@@ -1,0 +1,62 @@
+version: "3"
+
+services:
+  frontend:
+    image: backend:latest
+    restart: always
+    working_dir: "/usr/src/app"
+    env_file:
+      - "environment.env"
+    labels:
+      - "traefik.docker.network=web"
+      - "traefik.enable=true"
+      - "traefik.frontend.rule=Host:${APP_HOST}"
+      - "traefik.port=3000"
+      - "traefik.protocol=http"
+    networks:
+      - web
+      - default
+
+  backend:
+    image: backend:latest
+    restart: always
+    working_dir: "/usr/src/app"
+    env_file:
+      - "environment.env"
+    labels:
+      - "traefik.docker.network=web"
+      - "traefik.enable=true"
+      - "traefik.frontend.rule=Host:${API_HOST}"
+      - "traefik.port=3000"
+      - "traefik.protocol=http"
+    depends_on:
+      - mongo
+    networks:
+      - web
+      - default
+
+  mongo:
+    container_name: mongo
+    image: mongo
+    volumes:
+      - ./.mongo_database:/data/db
+    labels:
+      - "traefik.enable=false"
+
+  reverse-proxy:
+    image: traefik:alpine
+    command: --docker
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+      - ./traefik.toml:/traefik.toml
+      - ./acme.json:/acme.json
+    labels:
+      - "traefik.enable=false"
+    networks:
+      - web
+networks:
+  web:
+    external: true

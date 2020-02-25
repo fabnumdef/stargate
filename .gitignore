@@ -1,0 +1,6 @@
+deployment/inventory*.ini
+deployment/passwords
+deployment/*.tar
+### Ansible template
+*.retry
+
