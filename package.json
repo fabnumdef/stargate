@@ -1,0 +1,19 @@
+{
+  "name": "stargate",
+  "private": true,
+  "directories": {
+    "doc": "docs"
+  },
+  "dependencies": {},
+  "devDependencies": {
+    "vuepress": "^1.1.0"
+  },
+  "scripts": {
+    "docs:dev": "vuepress dev docs",
+    "docs:build": "vuepress build docs"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git@gitlab.com:fabnum-minarm/stargate/stargate.git"
+  }
+}
