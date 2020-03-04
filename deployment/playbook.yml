@@ -1,0 +1,110 @@
+---
+- hosts: all
+  remote_user: root
+
+  vars:
+    pip_install_packages:
+      - name: docker
+      - name: docker-compose
+    app_path: /opt/stargate
+    home_path: /root
+    local_frontend_path: ../frontend
+    local_backend_path: ../backend
+
+  roles:
+    - { role: "geerlingguy.pip" }
+    - { role: "geerlingguy.docker" }
+
+  pre_tasks:
+    - name: "Update packages list"
+      apt: update_cache=yes
+
+    - name: "Upgrade packages"
+      apt: upgrade=safe
+
+    - name: "Ensure that apt-transport-https is available"
+      apt: name=apt-transport-https state=latest
+
+  tasks:
+    - name: "Ensure that locale exists"
+      locale_gen:
+        name: fr_FR.UTF-8
+        state: present
+    - name: "Create directory"
+      file:
+        path: "{{app_path}}"
+        recurse: yes
+
+    - name: "Create docker image of backend"
+      delegate_to: localhost
+      docker_image:
+        name: backend
+        archive_path: ./backend.tar
+        source: build
+        build:
+          path: "{{ local_backend_path }}"
+          pull: yes
+          rm: no
+          nocache: yes
+
+    - name: "Create docker image of frontend"
+      delegate_to: localhost
+      docker_image:
+        name: frontend
+        archive_path: ./frontend.tar
+        source: build
+        build:
+          path: "{{ local_frontend_path }}"
+          pull: yes
+          rm: no
+          nocache: yes
+
+    - name: "Copy backend"
+      copy:
+        src: "./backend.tar"
+        dest: "{{app_path}}"
+
+    - name: "Copy frontend"
+      copy:
+        src: "./frontend.tar"
+        dest: "{{app_path}}"
+
+    - name: "Import backend"
+      command: "docker load -i {{app_path}}/backend.tar"
+
+    - name: "Import frontend"
+      command: "docker load -i {{app_path}}/frontend.tar"
+
+    - name: "Generate env file"
+      template:
+        src: "./environment.env.j2"
+        dest: "{{ app_path }}/environment.env"
+
+    - name: "Generate traefik config file"
+      template:
+        src: "./traefik.toml.j2"
+        dest: "{{ app_path }}/traefik.toml"
+
+    - name: "Lower acme permissions"
+      file:
+        state: touch
+        path: "{{ app_path }}/acme.json"
+        mode: 0600
+
+    - name: "Create a network"
+      docker_network:
+        name: web
+
+    - name: "Copy docker-compose"
+      copy:
+        src: "./docker-compose.yml"
+        dest: "{{app_path}}"
+
+    - name: "Run service in {{app_path}}"
+      docker_compose:
+        project_src: "{{ app_path }}"
+        state: present
+        restarted: yes
+      environment:
+        API_HOST: "{{ api_url }}"
+        APP_HOST: "{{ app_url }}"

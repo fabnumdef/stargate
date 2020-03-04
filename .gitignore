@@ -1,3 +1,8 @@
+deployment/inventory*.ini
+deployment/passwords
+deployment/*.tar
+### Ansible template
+*.retry
 # Created by .ignore support plugin (hsz.mobi)
 ### Node template
 # Logs
@@ -104,4 +109,3 @@ dist
 
 # TernJS port file
 .tern-port
-
