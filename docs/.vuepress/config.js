@@ -6,6 +6,7 @@ module.exports = {
         navbar: false,
         sidebar: [
             '/',
+            '/vocable',
             '/technologies',
             '/setup',
         ]
