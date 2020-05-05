@@ -10,3 +10,4 @@ Le code du projet étant, par convention, en anglais, et cherchant à être rela
 | User | Utilisateur | Il s'agit d'un utilisateur ayant accès au projet d'une manière ou d'une autre |
 | Unit | Unité | Il s'agit d'une entité ayant le contrôle de plusieurs lieux (zones) |
 | Request | Demande | Il s'agit d'une demande d'accès en tant que tel |
+| Internal | MINARM/Hors MINARM | Il s'agit d'identifier si une demande est faite pour un personnel minarm ou non, afin de rester générique le terme de 'interne' à été retenu, pour la notion d'interne entre le demandeur et l'environnement accueillant le visiteur |
