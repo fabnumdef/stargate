@@ -9,6 +9,7 @@ module.exports = {
             '/vocable',
             '/technologies',
             '/setup',
+            '/backend/state-machine',
         ]
     },
     locales: {
