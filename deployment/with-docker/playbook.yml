@@ -8,8 +8,8 @@
       - name: docker-compose
     app_path: /opt/stargate
     home_path: /root
-    local_frontend_path: ../frontend
-    local_backend_path: ../backend
+    local_frontend_path: ../../frontend
+    local_backend_path: ../../backend
 
   roles:
     - { role: "geerlingguy.pip" }

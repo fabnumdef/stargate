@@ -1,4 +1,4 @@
-deployment/inventory*.ini
+deployment/*/inventory*.ini
 deployment/passwords
 deployment/*.tar
 ### Ansible template
