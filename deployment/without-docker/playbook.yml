@@ -1,0 +1,422 @@
+---
+- hosts: all
+  remote_user: root
+  vars:
+    app_path: /opt/stargate
+    local_frontend_path: ../../frontend
+    local_backend_path: ../../backend
+    workdir: /root
+    frontend_version: fix/env-host
+    backend_version: fix/env-host
+    backend_domain: api.stargate.local
+    frontend_domain: stargate.local
+    grafana_domain: monitoring.stargate.local
+    grafana_version: 7.2.1
+    prometheus_version: 2.21.0
+  pre_tasks:
+    - name: "Update packages"
+      yum:
+        name: '*'
+        state: latest
+
+  handlers:
+    - name: "Start PM2"
+      service:
+        name: pm2-root
+        state: started
+        enabled: yes
+    - name: "Start nginx"
+      service:
+        name: nginx
+        state: started
+        enabled: yes
+    - name: "Restart nginx"
+      service:
+        name: nginx
+        state: restarted
+    - name: "Start grafana"
+      service:
+        name: grafana-server
+        enabled: true
+        state: started
+    - name: "Restart grafana"
+      service:
+        name: grafana-server
+        state: restarted
+    - name: "Start prometheus"
+      service:
+        name: prometheus
+        state: started
+        enabled: yes
+    - name: "Restart prometheus"
+      service:
+        name: prometheus
+        state: restarted
+
+
+  tasks:
+    - name: "Add MongoDB repository"
+      yum_repository:
+        baseurl: https://repo.mongodb.org/yum/redhat/$releasever/mongodb-org/4.4/x86_64/
+        name: "mongodb"
+        description: "MongoDB Repository"
+        gpgcheck: 1
+        enabled: 1
+        gpgkey: https://www.mongodb.org/static/pgp/server-4.4.asc
+
+
+    - name: "Install MongoDB"
+      yum:
+        name: mongodb-org
+        state: present
+
+    - name: Make sure that mongodb is running
+      systemd:
+        state: started
+        name: mongod
+
+## Enforce SELinux for mongodb monitoring
+
+    - name: "Install checkpolicy"
+      yum:
+        name: checkpolicy
+        state: present
+
+    - name: "Create SELinux policy for cgroup"
+      copy:
+        content: |
+          module mongodb_cgroup_memory 1.0;
+
+          require {
+              type cgroup_t;
+              type mongod_t;
+              class dir search;
+              class file { getattr open read };
+          }
+
+          #============= mongod_t ==============
+          allow mongod_t cgroup_t:dir search;
+          allow mongod_t cgroup_t:file { getattr open read };
+        dest: "{{ workdir }}/mongodb_cgroup_memory.te"
+      register: selinux_mongo_cgroup
+
+    - name: "Create SELinux policy for netstat"
+      copy:
+        content: |
+          module mongodb_proc_net 1.0;
+
+          require {
+            type proc_net_t;
+            type mongod_t;
+            class file { open read };
+          }
+
+          #============= mongod_t ==============
+          allow mongod_t proc_net_t:file { open read };
+        dest: "{{ workdir }}/mongodb_proc_net.te"
+      register: selinux_mongo_net
+
+    - name: Apply SELinux policy for cgroup
+      shell: |
+        cd {{ workdir }}
+        checkmodule -M -m -o mongodb_cgroup_memory.mod mongodb_cgroup_memory.te
+        semodule_package -o mongodb_cgroup_memory.pp -m mongodb_cgroup_memory.mod
+        semodule -i mongodb_cgroup_memory.pp
+      when: selinux_mongo_cgroup.changed
+
+    - name: Apply SELinux policy for netstat
+      shell: |
+        cd {{ workdir }}
+        checkmodule -M -m -o mongodb_proc_net.mod mongodb_proc_net.te
+        semodule_package -o mongodb_proc_net.pp -m mongodb_proc_net.mod
+        semodule -i mongodb_proc_net.pp
+      when: selinux_mongo_net.changed
+
+## disable THP for mongodb
+    - name: Disable THP via rc.local
+      lineinfile:
+        path: /etc/rc.d/rc.local
+        regexp: '\/sys\/kernel\/mm\/transparent_hugepage\/enabled'
+        line: "echo never > /sys/kernel/mm/transparent_hugepage/enabled"
+        mode: 744
+      register: sysfs_thp_disable
+
+
+    - name: Live disable THP
+      shell: "echo never > /sys/kernel/mm/transparent_hugepage/enabled"
+      when: sysfs_thp_disable.changed
+
+## Prepare for node projects
+    - name: "Install node"
+      yum:
+        name: nodejs
+        state: present
+
+    - name: Install pm2
+      community.general.npm:
+        name: pm2
+        global: yes
+
+## PM2 Service
+    - name: "Create PM2 policy for netstat"
+      copy:
+        content: |
+          module pm2_systemd 1.0;
+
+          require {
+            type admin_home_t;
+            type init_t;
+            class file { open read unlink write };
+          }
+
+          #============= init_t ==============
+          allow init_t admin_home_t:file { open read unlink write };
+        dest: "{{ workdir }}/pm2_systemd.te"
+      register: selinux_pm2_systemd
+
+    - name: Apply PM2 policy for cgroup
+      shell: |
+        cd {{ workdir }}
+        checkmodule -M -m -o pm2_systemd.mod pm2_systemd.te
+        semodule_package -o pm2_systemd.pp -m pm2_systemd.mod
+        semodule -i pm2_systemd.pp
+      when: selinux_pm2_systemd.changed
+
+    - name: Create PM2 service
+      shell:
+        creates: /etc/systemd/system/pm2-root.service
+        cmd: "pm2 startup"
+      notify: "Start PM2"
+
+## Install Website project
+    - name: Ensure that frontend directory exists
+      file:
+        path: "{{ app_path }}/frontend"
+        state: directory
+        recurse: on
+
+    - name: Download frontend
+      get_url:
+        url: "https://gitlab.com/fabnum-minarm/stargate/frontend/-/archive/{{ frontend_version }}/frontend-{{ frontend_version | replace('/','-') }}.tar.gz"
+        dest: "{{ workdir }}/frontend-{{ frontend_version | replace('/','-') }}.tar.gz"
+
+    - name: Unarchive frontend
+      unarchive:
+        src: "{{ workdir }}/frontend-{{ frontend_version | replace('/','-') }}.tar.gz"
+        dest: "{{ app_path }}/frontend"
+        remote_src: yes
+        extra_opts: [--strip-components=1]
+      register: unarchive_frontend
+
+    - name: Install packages based on package.json of frontend
+      community.general.npm:
+        path: "{{ app_path }}/frontend"
+      when: unarchive_frontend.changed
+
+    - name: build frontend
+      shell:
+        chdir: "{{ app_path }}/frontend"
+        cmd: "npm run build"
+      when: unarchive_frontend.changed
+
+    - name: Create frontend PM2 service
+      shell:
+        chdir: "{{ app_path }}/frontend"
+        cmd: "pm2 start npm --name 'frontend' -- start -- --host 127.0.0.1"
+        creates: "/root/.pm2/pids/frontend*.pid"
+      environment:
+        PROMETHEUS_HOST: 127.0.0.1
+        PROMETHEUS_PORT: 9092
+        PORT: 3001
+        HOST: 127.0.0.1
+
+## Install API project
+    - name: Ensure that backend directory exists
+      file:
+        path: "{{ app_path }}/backend"
+        state: directory
+        recurse: on
+
+    - name: Download backend
+      get_url:
+        url: "https://gitlab.com/fabnum-minarm/stargate/backend/-/archive/{{ backend_version }}/backend-{{ backend_version | replace('/','-') }}.tar.gz"
+        dest: "{{ workdir }}/backend-{{ backend_version | replace('/','-') }}.tar.gz"
+
+    - name: Unarchive backend
+      unarchive:
+        src: "{{ workdir }}/backend-{{ backend_version | replace('/','-') }}.tar.gz"
+        dest: "{{ app_path }}/backend"
+        remote_src: yes
+        extra_opts: [--strip-components=1]
+      register: unarchive_backend
+
+    - name: Install packages based on package.json of backend
+      community.general.npm:
+        path: "{{ app_path }}/backend"
+      when: unarchive_backend.changed
+
+    - name: Create backend PM2 service
+      shell:
+        chdir: "{{ app_path }}/backend"
+        cmd: "pm2 start npm --name 'backend' -- start"
+        creates: "/root/.pm2/pids/backend*.pid"
+      environment:
+        HOST: 127.0.0.1
+        PROMETHEUS_EXPORTER: 9091
+
+## Monitoring
+    - name: Install prometheus
+      unarchive:
+        src: "https://github.com/prometheus/prometheus/releases/download/v{{ prometheus_version }}/prometheus-{{ prometheus_version }}.linux-amd64.tar.gz"
+        dest: /tmp/
+        remote_src: yes
+
+    - name: Copy prometheus file to bin
+      copy:
+        src: "/tmp/prometheus-{{ prometheus_version }}.linux-amd64/prometheus"
+        dest: "/usr/local/bin/prometheus"
+        remote_src: yes
+        mode: 0755
+      notify: "Start prometheus"
+
+    - name: Ensure that prometheus directory exists
+      file:
+        path: "/etc/prometheus"
+        state: directory
+        recurse: on
+
+    - name: Add config file for prometheus
+      template:
+        src: prometheus.conf.j2
+        dest: /etc/prometheus/prometheus.conf
+      notify: "Restart prometheus"
+
+    - name: Copy systemd init file for prometheus
+      template:
+        src: init.service.j2
+        dest: /etc/systemd/system/prometheus.service
+      notify: "Start prometheus"
+
+    - name: Install grafana
+      yum:
+        name: https://dl.grafana.com/oss/release/grafana-{{ grafana_version }}-1.x86_64.rpm
+        state: latest
+        disable_gpg_check: yes
+      notify: "Start grafana"
+
+    - name: "Grafana configuration file copy"
+      template:
+        src: "grafana.ini.j2"
+        dest: /etc/grafana/grafana.ini
+      notify: "Restart grafana"
+
+## Prepare for nginx reverse proxy
+    - name: "Install nginx"
+      yum:
+        name: nginx
+        state: present
+      notify: "Start nginx"
+
+    - name: Remove default nginx backend
+      copy:
+        content: |
+          # For more information on configuration, see:
+          user nginx;
+          worker_processes auto;
+          error_log /var/log/nginx/error.log;
+          pid /run/nginx.pid;
+
+          # Load dynamic modules. See /usr/share/doc/nginx/README.dynamic.
+          include /usr/share/nginx/modules/*.conf;
+
+          events {
+              worker_connections 1024;
+          }
+
+          http {
+              log_format  main  '$remote_addr - $remote_user [$time_local] "$request" '
+                                '$status $body_bytes_sent "$http_referer" '
+                                '"$http_user_agent" "$http_x_forwarded_for"';
+
+              access_log  /var/log/nginx/access.log  main;
+
+              sendfile            on;
+              tcp_nopush          on;
+              tcp_nodelay         on;
+              keepalive_timeout   65;
+              types_hash_max_size 2048;
+
+              include             /etc/nginx/mime.types;
+              default_type        application/octet-stream;
+
+              include /etc/nginx/conf.d/*.conf;
+          }
+
+        dest: /etc/nginx/nginx.conf
+      notify: "Restart nginx"
+
+    - name: Set httpd_can_network_connect flag on and keep it persistent across reboots
+      ansible.posix.seboolean:
+        name: httpd_can_network_connect
+        state: yes
+        persistent: yes
+
+    - name: add nginx conf for backend
+      copy:
+        content: |
+          server {
+            listen 80;
+            server_name {{backend_domain}};
+            location / {
+              proxy_set_header X-Real-IP $remote_addr;
+              proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+              proxy_set_header X-Forwarded-Proto $scheme;
+              proxy_set_header Host $host;
+              proxy_set_header X-NginX-Proxy true;
+
+              proxy_pass http://localhost:3000;
+              proxy_redirect http://localhost:3000/ http://$server_name/;
+            }
+          }
+        dest: /etc/nginx/conf.d/backend.conf
+      notify: "Restart nginx"
+
+    - name: add nginx conf for frontend
+      copy:
+        content: |
+          server {
+            listen 80;
+            server_name {{frontend_domain}};
+            location / {
+              proxy_set_header X-Real-IP $remote_addr;
+              proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+              proxy_set_header X-Forwarded-Proto $scheme;
+              proxy_set_header Host $host;
+              proxy_set_header X-NginX-Proxy true;
+
+              proxy_pass http://localhost:3001;
+              proxy_redirect http://localhost:3001/ http://$server_name/;
+            }
+          }
+        dest: /etc/nginx/conf.d/frontend.conf
+      notify: "Restart nginx"
+
+    - name: add nginx conf for grafana
+      copy:
+        content: |
+          server {
+            listen 80;
+            server_name {{grafana_domain}};
+            location / {
+              proxy_set_header X-Real-IP $remote_addr;
+              proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+              proxy_set_header X-Forwarded-Proto $scheme;
+              proxy_set_header Host $host;
+              proxy_set_header X-NginX-Proxy true;
+
+              proxy_pass http://localhost:9000;
+              proxy_redirect http://localhost:9000/ http://$server_name/;
+            }
+          }
+        dest: /etc/nginx/conf.d/grafana.conf
+      notify: "Restart nginx"
