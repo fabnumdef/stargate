@@ -8,7 +8,9 @@ module.exports = {
             '/',
             '/vocable',
             '/technologies',
+            '/flux',
             '/setup',
+            '/selinux',
             '/backend/state-machine',
         ]
     },
