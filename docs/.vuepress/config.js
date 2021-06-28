@@ -11,6 +11,7 @@ module.exports = {
             '/',
             '/vocable',
             '/technologies',
+            '/flux',
             '/setup',
             '/selinux',
             '/mindef-connect',
