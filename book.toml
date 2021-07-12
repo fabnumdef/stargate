@@ -1,0 +1,8 @@
+[book]
+authors = ["Gaël Demette"]
+language = "fr"
+multilingual = false
+src = "src"
+title = "Stargate"
+[build]
+build-dir = "out/html"
