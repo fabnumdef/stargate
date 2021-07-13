@@ -1,13 +1,13 @@
-image: node:latest
+stages:
+  - docs
+
+include:
+  - project: fabnum-minarm/igloo/gitlab-templates
+    file:
+      - /pandoc.all.yml
+      - /mdbook.auto.yml
+      - /pages.auto.yml
+
 pages:
-  cache:
-    paths:
-      - node_modules/
-  script:
-    - npm install
-    - npm run docs:build
-  artifacts:
-    paths:
-      - public
   only:
     - master
