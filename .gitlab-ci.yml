@@ -1,5 +1,7 @@
 stages:
   - docs
+  - build
+  - release
 
 include:
   - project: fabnum-minarm/igloo/gitlab-templates
@@ -7,6 +9,19 @@ include:
       - /pandoc.all.yml
       - /mdbook.auto.yml
       - /pages.auto.yml
+      - /releaser.auto.yml
+
+variables:
+  GENERIC_PACKAGE_NAME: stargate
+
+.igloo:build:docs:pandoc:
+  rules:
+    - if: "$CI_COMMIT_BRANCH || $CI_COMMIT_TAG"
+      exists:
+        - metadata.pandoc.yml
+        - src/??-*.md
+      when: always
+    - when: never
 
 pages:
   only:

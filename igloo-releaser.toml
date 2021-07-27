@@ -1,0 +1,12 @@
+copy = ["dist/"]
+
+[binaries]
+get = ["https://repo.mongodb.org/yum/redhat/8/mongodb-org/5.0/x86_64/RPMS/mongodb-org-server-5.0.1-1.el8.x86_64.rpm"]
+
+[stargate_backend]
+# https://gitlab.com/fabnum-minarm/stargate/backend
+uncompress = ["https://gitlab.com/api/v4/projects/15793090/packages/generic/stargate_backend/$CI_COMMIT_TAG/stargate_backend_$CI_COMMIT_TAG.tar.bz2"]
+
+[stargate_frontend]
+# https://gitlab.com/fabnum-minarm/stargate/frontend
+uncompress = ["https://gitlab.com/api/v4/projects/15793082/packages/generic/stargate_frontend/$CI_COMMIT_TAG/stargate_frontend_$CI_COMMIT_TAG.tar.bz2"]
