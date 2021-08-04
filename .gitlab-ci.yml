@@ -1,5 +1,6 @@
 stages:
   - docs
+  - prebuild
   - build
   - release
 
@@ -10,9 +11,25 @@ include:
       - /mdbook.auto.yml
       - /pages.auto.yml
       - /releaser.auto.yml
+      - /npm.yml
 
 variables:
   GENERIC_PACKAGE_NAME: stargate
+
+pack-pm2:
+  extends: .igloo:npm:install
+  cache:
+    policy: pull
+  stage: prebuild
+  before_script: []
+  script:
+    - npm i -g pm2
+    - mkdir -p pm2 && cd $_
+    - tar -C $(npm list -g --depth=0 | head -1)/node_modules -cjf $CI_PROJECT_DIR/pm2.tar.bz2 pm2
+    - ls -al
+  artifacts:
+    paths:
+      - pm2.tar.bz2
 
 .igloo:build:docs:pandoc:
   rules:

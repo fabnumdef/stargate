@@ -1,7 +1,14 @@
-copy = ["dist/"]
+copy = ["dist/docs.*"]
 
 [binaries]
-get = ["https://repo.mongodb.org/yum/redhat/8/mongodb-org/5.0/x86_64/RPMS/mongodb-org-server-5.0.1-1.el8.x86_64.rpm"]
+get = [
+    "https://forensics.cert.org/centos/cert/8/x86_64/musl-filesystem-1.2.1-1.el8.x86_64.rpm",
+    "https://forensics.cert.org/centos/cert/8/x86_64/musl-libc-1.2.1-1.el8.x86_64.rpm",
+    "https://repo.mongodb.org/yum/redhat/8/mongodb-org/5.0/x86_64/RPMS/mongodb-org-server-5.0.1-1.el8.x86_64.rpm",
+    "https://nodejs.org/dist/v14.17.4/node-v14.17.4-linux-x64.tar.xz",
+    "https://nginx.org/packages/rhel/8/x86_64/RPMS/nginx-1.20.1-1.el8.ngx.x86_64.rpm"
+]
+copy = ["pm2.tar.bz2"]
 
 [stargate_backend]
 # https://gitlab.com/fabnum-minarm/stargate/backend

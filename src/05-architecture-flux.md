@@ -1,4 +1,8 @@
-# Matrice de flux applicatifs
+# Matrices de flux
+
+La matrice de flux est très dépendante de comment est installé l'application.
+
+## Installation avec conteneurisation
 
 | Source | Destination | Port(s) | Protocole | Description |
 |--------|-------------|---------|-----------|-------------|
@@ -20,7 +24,7 @@ Complément d'informations : Le projet remonte logs et metrics
 |Prometheus|Backend|9091|HTTP|Scrape métriques|
 |Prometheus|Frontend|9091|HTTP|Scrape métriques|
 
-# Matrice de flux applicatifs (dockerless)
+## Installation classique
 
 | Source | Destination | Port(s) | Protocole | Description |
 |--------|-------------|---------|-----------|-------------|

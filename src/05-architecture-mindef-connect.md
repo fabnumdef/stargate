@@ -22,5 +22,5 @@ Pour pouvoir utiliser keycloak pour tester l'implémentation, il faut :
     1. L'URL du _realm_
     2. L'ID du _client_
     3. Le secret du _client_
-    
+
 Plus de détails sur la méthode de configuration dans [la documentation Igloo](https://fabnum-minarm.gitlab.io/igloo/docs/third-party/mindef-connect.html).
