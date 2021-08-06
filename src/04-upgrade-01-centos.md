@@ -3,6 +3,7 @@
 Cette documentation cible la mise à niveau sur un VPS avec CentOS 8.
 
 Dans le présent document, vous trouverez certaines variables, qui sont utilisées comme en `bash` dont voici les références :
+
 | Nom de la variable | Description |
 |--------------------|-------------|
 |     VERSION        | Version à installer, format vMAJEUR.MINEUR.PATCH |

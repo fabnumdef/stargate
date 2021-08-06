@@ -5,6 +5,7 @@
 Cette documentation cible l'installation sur un VPS avec CentOS 8, avec un minimum d'interaction sur internet, afin de servir de base pour une installation dans un environnement hors réseau.
 
 Dans le présent document, vous trouverez certaines variables, qui sont utilisées comme en `bash` dont voici les références : 
+
 | Nom de la variable | Description |
 |--------------------|-------------|
 |     VERSION        | Version à installer, format vMAJEUR.MINEUR.PATCH |
