@@ -2,7 +2,7 @@
 
 ## Introduction
 
-Cette documentation cible l'installation sur un VPS avec CentOS 8, avec un minimum d'interaction sur internet, afin de servir de base pour une installation dans un environnement hors réseau.
+Cette documentation cible l'installation sur un VPS avec CentOS 7, avec un minimum d'interactions sur internet, afin de servir de base pour une installation dans un environnement hors réseau.
 
 Dans le présent document, vous trouverez certaines variables, qui sont utilisées comme en `bash` dont voici les références : 
 
@@ -31,6 +31,9 @@ rpm -i ${PATH_ARCHIVE}/binaries/musl-filesystem-*.rpm
 rpm -i ${PATH_ARCHIVE}/binaries/musl-libc-*.rpm
 ln -s /usr/lib64/libc.so.6 /usr/lib64/libc.musl-x86_64.so.1
 ```
+
+Le package `policycoreutils-python` sera requis si les commandes `checkmodule` et `semodule_package` ne sont pas disponibles.
+Le package `bzip2` sera requis pour décompresser les archives .tar.bz2
 
 ## Installation de MongoDB
 
@@ -110,11 +113,11 @@ Afin de vérifier la bonne configuration, la commande suivante devrait retourner
 cat /sys/kernel/mm/transparent_hugepage/enabled
 ```
 
-Sur CentOS, quelques configurations supplémentaires sont nécessaires pour le virtual-guest.
+_Sur CentOS 8 uniquement_, quelques configurations supplémentaires sont nécessaires pour le virtual-guest.
 
 Créez le répertoire avec la commande suivante : 
 ```bash
-mkdir /etc/tuned/virtual-guest-no-thp
+mkdir -p /etc/tuned/virtual-guest-no-thp
 ```
 
 Ajoutez ensuite le contenu suivant au fichier `/etc/tuned/virtual-guest-no-thp/tuned.conf` :
@@ -217,6 +220,25 @@ npm rebuild
 HOST=127.0.0.1 PROMETHEUS_EXPORTER=0 pm2 start npm --name 'backend' -- start
 ```
 
+#### Personnaliser la configuration
+
+La configuration se fait via des variables d'environnement. Il suffit de les exporter dans le shell courant, avant de mettre à jour les variables prises en compte par `pm2`.
+
+Il est ensuite possible ensuite de lister les variables d'environnement prises en compte avec `pm2 env`
+
+```bash
+export MONGODB=mongodb://localhost:27017/stargate
+export MAIL__DEFAULT_FROM= # Expéditeur des emails
+export MAIL__TRANSPORTER__HOST= # Nom de domaine du serveur mail
+export MAIL__TRANSPORTER__PORT= # Port du serveur mail
+export MAIL__TRANSPORTER__AUTH__PASS= # Mot de passe pour l'authentification mail
+export MAIL__TRANSPORTER__AUTH__USER= # Utilisateur pour l'authentification mail
+export TOKEN__SECRET=$(tr -dc 'A-Za-z0-9!"#$%&'\''()*+,-./:;<=>?@[\]^_`{|}~' </dev/urandom | head -c 128 ) # Va être utilisé comme preuve cryptographique pour les jetons JWT
+export WEBSITE_URL=https://${FRONTEND_DOMAIN}
+pm2 restart backend --update-env
+pm2 env $(pm2 ls | grep backend | awk -F'│' '{print $2}') # Vérifier
+```
+
 ### Installer le frontend
 
 Pour installer le frontend, nous allons :
@@ -230,6 +252,17 @@ mv ${PATH_ARCHIVE}/stargate_frontend /opt/stargate/frontend
 cd /opt/stargate/frontend
 npm rebuild
 PORT=3001 HOST=127.0.0.1 PROMETHEUS_HOST=127.0.0.1 pm2 start npm --name 'frontend' -- start -- --host 127.0.0.1
+```
+
+#### Mettre à jour l'API URL
+
+La configuration se fait via des variables d'environnement. Il suffit de les exporter dans le shell courant, avant de mettre à jour les variables prises en compte par `pm2`.
+
+Il est ensuite possible ensuite de lister les variables d'environnement prises en compte avec `pm2 env`
+```bash
+export API_URL=https://${BACKEND_DOMAIN}/api
+pm2 restart frontend --update-env
+pm2 env $(pm2 ls | grep frontend | awk -F'│' '{print $2}') # Vérifier
 ```
 
 ## Nginx
