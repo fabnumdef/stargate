@@ -1,6 +1,6 @@
 # Installation sur poste de développement
 
-Cette procédure d'installation vaut pour un environnement local, dans lequel aucune résilience est requise.  
+Cette procédure d'installation vaut pour un environnement local dans lequel aucune résilience n’est requise.
 Il est réputé acquis que toutes les données peuvent être perdues.
 
 ## Prérequis
@@ -50,7 +50,7 @@ Pour installer ce projet, il faut :
 
 ## Web App (Frontend)
 
-Pour installer cet projet, il faut :
+Pour installer ce projet, il faut :
 
 * Cloner le projet [frontend](https://gitlab.com/fabnum-minarm/stargate/frontend)
 * Mettre à niveau les dépendances via `npm install`

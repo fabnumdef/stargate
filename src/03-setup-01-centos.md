@@ -306,7 +306,7 @@ http {
 }
 ```
 
-Pour la configuration du backend, Éditons le fichier `/etc/nginx/conf.d/backend.conf`  
+Pour la configuration du backend, éditons le fichier `/etc/nginx/conf.d/backend.conf`  
 Attention, modifiez bien le $BACKEND_DOMAIN dans le fichier avec le nom de domaine du frontend
 ```nginx
 server {
@@ -325,7 +325,7 @@ server {
 }
 ```
 
-Pour la configuration du frontend, Éditons le fichier `/etc/nginx/conf.d/frontend.conf`  
+Pour la configuration du frontend, éditons le fichier `/etc/nginx/conf.d/frontend.conf`  
 Attention, modifiez bien le $FRONTEND_DOMAIN dans le fichier avec le nom de domaine du frontend
 ```nginx
 server {

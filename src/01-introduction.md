@@ -1,6 +1,5 @@
 # Introduction
-
-Cette documentation a pour objectif d'être technique et de fournir les clefs pour la mise en place d'un environnement fonctionnel Stargate, et d'expliquer le fonctionnement au sein et entre les briques techniques du projet.
+Cette documentation technique a pour objectif de fournir les clefs pour la mise en place d'un environnement fonctionnel Stargate en expliquant le fonctionnement interne ainsi que les différentes interactions entre les briques techniques du projet.
 
 Retrouvez cette documentation sur https://fabnum-minarm.gitlab.io/stargate/docs/
 

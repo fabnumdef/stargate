@@ -11,7 +11,7 @@ La matrice de flux est très dépendante de comment est installé l'application.
 |Backend|MongoDB|27017|TCP|Connexion DB|
 |Proxy|Backend|3000|HTTP|Le backend est accessible via le proxy|
 |Proxy|Frontend|3000|HTTP|Le frontend est accessible via le proxy|
-|Frontend|Backend|3000|HTTP|Le frontend interroge le backend pour le rendu coté serveur|
+|Frontend|Backend|3000|HTTP|Le frontend interroge le backend pour le rendu côté serveur|
 
 Complément d'informations : Le projet remonte logs et metrics
 
@@ -19,7 +19,7 @@ Complément d'informations : Le projet remonte logs et metrics
 |--------|-------------|---------|-----------|-------------|
 |Administrateur|Proxy|443|HTTP/HTTPS|Accès web|
 |Proxy|Grafana|80|HTTP|Le monitoring est accessible via le proxy|
-|Grafana|Prometheus|9090|HTTP|Requete les métriques|
+|Grafana|Prometheus|9090|HTTP|Requête les métriques|
 |Prometheus|InfluxDB|8086|HTTP|TimeSeries database|
 |Prometheus|Backend|9091|HTTP|Scrape métriques|
 |Prometheus|Frontend|9091|HTTP|Scrape métriques|

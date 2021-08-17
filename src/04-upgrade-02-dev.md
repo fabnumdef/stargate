@@ -1,6 +1,6 @@
 # Mise à niveau environnement local dev
 
-Afin de mettre à niveau l'environnement local, il suffit de récupérer la nouvelle version de code et exécuter les éventuelles migrations de données.
+Afin de mettre à niveau l'environnement local, il suffit de récupérer la nouvelle version de code et d’exécuter les éventuelles migrations de données.
 
 ## Backend & Frontend
 
