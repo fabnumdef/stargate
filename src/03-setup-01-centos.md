@@ -20,7 +20,10 @@ Stargate étant opensource, le téléchargement se fait via la liste des release
 Rendez-vous sur [la page des releases du dépôt de documentation](https://gitlab.com/fabnum-minarm/stargate/docs/-/releases), pour chaque version, il y a une liste de packages, avec une archive `.tar.bz2`.
 
 Utilisez `scp` pour envoyer l'archive sur le VPS.
-Décompressez l'archive grâce à la commande `mkdir $PATH_ARCHIVE && tar -C $PATH_ARCHIVE -xjf stargate_${VERSION}.tar.bz2 && cd $PATH_ARCHIVE`
+Décompressez l'archive grâce à la commande suivante : 
+```bash
+mkdir $PATH_ARCHIVE && tar -C $PATH_ARCHIVE -xjf stargate_${VERSION}.tar.bz2 && cd $PATH_ARCHIVE
+```
 
 ## Installation des prérequis
 
@@ -38,7 +41,10 @@ Le package `bzip2` sera requis pour décompresser les archives .tar.bz2
 ## Installation de MongoDB
 
 Dans le dossier de binaires se trouve un fichier .rpm (for RPM Package Manager) compatible avec CentOS.
-Pour l'installer, rien de plus simple : `rpm -i ${PATH_ARCHIVE}/binaries/mongodb-org-server-*.rpm`
+Pour l'installer, rien de plus simple :
+```bash
+rpm -i ${PATH_ARCHIVE}/binaries/mongodb-org-server-*.rpm
+```
 
 Une fois installé, assurez vous que le service sera actif au démarrage avec la commande suivante.
 
