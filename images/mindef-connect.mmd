@@ -1,0 +1,21 @@
+sequenceDiagram
+  autonumber
+  participant Browser as Navigateur de l'utilisateur (Firefox)
+  participant FFS as Front du Fournisseur de Service (SPA)
+  participant BFS as Backend du Fournisseur de Service (NodeJS)
+  participant FI as Fournisseur d'identité (keycloak)
+
+  Note over Browser,FI: Au lancement du serveur
+  BFS->>FI: Requête le well known afin de récupérer la configuration openid (discover)
+
+  Note over Browser,FI: Pour se connecter
+  Browser->>FFS: Chargement de page de login
+  Browser->>Browser: Clic sur le bouton "Connexion"
+  Browser->>FI: Accède à la page d'authentification
+  Browser->>Browser: Entre identifiants et se connecte / utilise SPNEGO
+  FI->>Browser: Réponds en 30x pour rediriger sur l'url de redirection avec les informations de connexion en query params
+  Browser->>FFS: <redirect-uri>?state=xxxx&code=xxx&...
+  FFS->>BFS: Envoie le code au Backend, pour que ce dernier requete les jetons
+  BFS->>FI: Echange le code contre deux jetons : Access et Refresh
+  BFS->>FI: Lire le JWT directement pouvant être une mauvaise pratique, le Backend va demander au FI les informations
+  BFS->>FFS: Génère un jeton JWT

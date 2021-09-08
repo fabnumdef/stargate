@@ -1,0 +1,469 @@
+<!DOCTYPE HTML>
+<html lang="fr" class="sidebar-visible no-js light">
+    <head>
+        <!-- Book generated using mdBook -->
+        <meta charset="UTF-8">
+        <title>Installation VPS CentOS - Stargate</title>
+                
+
+        <!-- Custom HTML head -->
+        
+
+        <meta content="text/html; charset=utf-8" http-equiv="Content-Type">
+        <meta name="description" content="">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta name="theme-color" content="#ffffff" />
+
+                <link rel="icon" href="favicon.svg">
+                        <link rel="shortcut icon" href="favicon.png">
+                <link rel="stylesheet" href="css/variables.css">
+        <link rel="stylesheet" href="css/general.css">
+        <link rel="stylesheet" href="css/chrome.css">
+                <link rel="stylesheet" href="css/print.css" media="print">
+        
+        <!-- Fonts -->
+        <link rel="stylesheet" href="FontAwesome/css/font-awesome.css">
+                <link rel="stylesheet" href="fonts/fonts.css">
+        
+        <!-- Highlight.js Stylesheets -->
+        <link rel="stylesheet" href="highlight.css">
+        <link rel="stylesheet" href="tomorrow-night.css">
+        <link rel="stylesheet" href="ayu-highlight.css">
+
+        <!-- Custom theme stylesheets -->
+        
+            </head>
+    <body>
+        <!-- Provide site root to javascript -->
+        <script type="text/javascript">
+            var path_to_root = "";
+            var default_theme = window.matchMedia("(prefers-color-scheme: dark)").matches ? "navy" : "light";
+        </script>
+
+        <!-- Work around some values being stored in localStorage wrapped in quotes -->
+        <script type="text/javascript">
+            try {
+                var theme = localStorage.getItem('mdbook-theme');
+                var sidebar = localStorage.getItem('mdbook-sidebar');
+
+                if (theme.startsWith('"') && theme.endsWith('"')) {
+                    localStorage.setItem('mdbook-theme', theme.slice(1, theme.length - 1));
+                }
+
+                if (sidebar.startsWith('"') && sidebar.endsWith('"')) {
+                    localStorage.setItem('mdbook-sidebar', sidebar.slice(1, sidebar.length - 1));
+                }
+            } catch (e) { }
+        </script>
+
+        <!-- Set the theme before any content is loaded, prevents flash -->
+        <script type="text/javascript">
+            var theme;
+            try { theme = localStorage.getItem('mdbook-theme'); } catch(e) { }
+            if (theme === null || theme === undefined) { theme = default_theme; }
+            var html = document.querySelector('html');
+            html.classList.remove('no-js')
+            html.classList.remove('light')
+            html.classList.add(theme);
+            html.classList.add('js');
+        </script>
+
+        <!-- Hide / unhide sidebar before it is displayed -->
+        <script type="text/javascript">
+            var html = document.querySelector('html');
+            var sidebar = 'hidden';
+            if (document.body.clientWidth >= 1080) {
+                try { sidebar = localStorage.getItem('mdbook-sidebar'); } catch(e) { }
+                sidebar = sidebar || 'visible';
+            }
+            html.classList.remove('sidebar-visible');
+            html.classList.add("sidebar-" + sidebar);
+        </script>
+
+        <nav id="sidebar" class="sidebar" aria-label="Table of contents">
+            <div class="sidebar-scrollbox">
+                <ol class="chapter"><li class="chapter-item expanded "><a href="01-introduction.html"><strong aria-hidden="true">1.</strong> Introduction</a></li><li class="chapter-item expanded "><a href="02-vocable.html"><strong aria-hidden="true">2.</strong> Vocabulaire</a></li><li class="chapter-item expanded "><a href="03-setup.html"><strong aria-hidden="true">3.</strong> Installations et environnements</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="03-setup-01-centos.html" class="active"><strong aria-hidden="true">3.1.</strong> Installation VPS CentOS</a></li><li class="chapter-item expanded "><a href="03-setup-02-dev.html"><strong aria-hidden="true">3.2.</strong> Installation dev</a></li><li class="chapter-item expanded "><a href="03-setup-03-devops.html"><strong aria-hidden="true">3.3.</strong> Environnement DevSecOps</a></li></ol></li><li class="chapter-item expanded "><a href="04-upgrade.html"><strong aria-hidden="true">4.</strong> Mises à niveau</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="04-upgrade-01-centos.html"><strong aria-hidden="true">4.1.</strong> Mise à niveau sur un VPS CentOS</a></li><li class="chapter-item expanded "><a href="04-upgrade-02-dev.html"><strong aria-hidden="true">4.2.</strong> Mise à niveau environnement local dev</a></li><li class="chapter-item expanded "><a href="04-upgrade-03-devops.html"><strong aria-hidden="true">4.3.</strong> Mise à niveau environnement DevSecOps</a></li></ol></li><li class="chapter-item expanded "><a href="05-architecture.html"><strong aria-hidden="true">5.</strong> Architecture</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="05-architecture-technologies.html"><strong aria-hidden="true">5.1.</strong> Technologies</a></li><li class="chapter-item expanded "><a href="05-architecture-flux.html"><strong aria-hidden="true">5.2.</strong> Matrice de flux</a></li><li class="chapter-item expanded "><a href="05-architecture-mindef-connect.html"><strong aria-hidden="true">5.3.</strong> Mindef connect</a></li></ol></li><li class="chapter-item expanded "><a href="06-backups.html"><strong aria-hidden="true">6.</strong> Backups</a></li><li class="chapter-item expanded "><a href="07-monitoring.html"><strong aria-hidden="true">7.</strong> Monitoring</a></li><li class="chapter-item expanded "><a href="08-releases.html"><strong aria-hidden="true">8.</strong> Procédure de publication de versions</a></li><li class="chapter-item expanded "><a href="09-common-errors.html"><strong aria-hidden="true">9.</strong> Procédures de corrections fréquentes</a></li></ol>            </div>
+            <div id="sidebar-resize-handle" class="sidebar-resize-handle"></div>
+        </nav>
+
+        <div id="page-wrapper" class="page-wrapper">
+
+            <div class="page">
+                
+                <div id="menu-bar-hover-placeholder"></div>
+                <div id="menu-bar" class="menu-bar sticky bordered">
+                    <div class="left-buttons">
+                        <button id="sidebar-toggle" class="icon-button" type="button" title="Toggle Table of Contents" aria-label="Toggle Table of Contents" aria-controls="sidebar">
+                            <i class="fa fa-bars"></i>
+                        </button>
+                        <button id="theme-toggle" class="icon-button" type="button" title="Change theme" aria-label="Change theme" aria-haspopup="true" aria-expanded="false" aria-controls="theme-list">
+                            <i class="fa fa-paint-brush"></i>
+                        </button>
+                        <ul id="theme-list" class="theme-popup" aria-label="Themes" role="menu">
+                            <li role="none"><button role="menuitem" class="theme" id="light">Light (default)</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="rust">Rust</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="coal">Coal</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="navy">Navy</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="ayu">Ayu</button></li>
+                        </ul>
+                                                <button id="search-toggle" class="icon-button" type="button" title="Search. (Shortkey: s)" aria-label="Toggle Searchbar" aria-expanded="false" aria-keyshortcuts="S" aria-controls="searchbar">
+                            <i class="fa fa-search"></i>
+                        </button>
+                                            </div>
+
+                    <h1 class="menu-title">Stargate</h1>
+
+                    <div class="right-buttons">
+                                                <a href="print.html" title="Print this book" aria-label="Print this book">
+                            <i id="print-button" class="fa fa-print"></i>
+                        </a>
+                                                                        
+                    </div>
+                </div>
+
+                                <div id="search-wrapper" class="hidden">
+                    <form id="searchbar-outer" class="searchbar-outer">
+                        <input type="search" id="searchbar" name="searchbar" placeholder="Search this book ..." aria-controls="searchresults-outer" aria-describedby="searchresults-header">
+                    </form>
+                    <div id="searchresults-outer" class="searchresults-outer hidden">
+                        <div id="searchresults-header" class="searchresults-header"></div>
+                        <ul id="searchresults">
+                        </ul>
+                    </div>
+                </div>
+                
+                <!-- Apply ARIA attributes after the sidebar and the sidebar toggle button are added to the DOM -->
+                <script type="text/javascript">
+                    document.getElementById('sidebar-toggle').setAttribute('aria-expanded', sidebar === 'visible');
+                    document.getElementById('sidebar').setAttribute('aria-hidden', sidebar !== 'visible');
+                    Array.from(document.querySelectorAll('#sidebar a')).forEach(function(link) {
+                        link.setAttribute('tabIndex', sidebar === 'visible' ? 0 : -1);
+                    });
+                </script>
+
+                <div id="content" class="content">
+                    <main>
+                        <h1 id="installation-sur-vps-centos"><a class="header" href="#installation-sur-vps-centos">Installation sur VPS CentOS</a></h1>
+<h2 id="introduction"><a class="header" href="#introduction">Introduction</a></h2>
+<p>Cette documentation cible l'installation sur un VPS avec CentOS 7, avec un minimum d'interactions sur internet, afin de servir de base pour une installation dans un environnement hors réseau.</p>
+<p>Dans le présent document, vous trouverez certaines variables, qui sont utilisées comme en <code>bash</code> dont voici les références : </p>
+<table><thead><tr><th>Nom de la variable</th><th>Description</th></tr></thead><tbody>
+<tr><td>VERSION</td><td>Version à installer, format vMAJEUR.MINEUR.PATCH</td></tr>
+<tr><td>IP_VPS</td><td>L'ip du serveur VPS cible</td></tr>
+<tr><td>PATH_ARCHIVE</td><td>Contient le nom du dossier (ou le path absolu) vers le dossier où on va décompresser les fichiers du livrable</td></tr>
+<tr><td>BACKEND_DOMAIN</td><td>Le nom de domaine dns du backend</td></tr>
+<tr><td>FRONTEND_DOMAIN</td><td>Le nom de domaine dns du frontend</td></tr>
+</tbody></table>
+<h2 id="téléchargement"><a class="header" href="#téléchargement">Téléchargement</a></h2>
+<p>Stargate étant opensource, le téléchargement se fait via la liste des releases sur internet.
+Rendez-vous sur <a href="https://gitlab.com/fabnum-minarm/stargate/docs/-/releases">la page des releases du dépôt de documentation</a>, pour chaque version, il y a une liste de packages, avec une archive <code>.tar.bz2</code>.</p>
+<p>Utilisez <code>scp</code> pour envoyer l'archive sur le VPS.
+Décompressez l'archive grâce à la commande suivante : </p>
+<pre><code class="language-bash">mkdir $PATH_ARCHIVE &amp;&amp; tar -C $PATH_ARCHIVE -xjf stargate_${VERSION}.tar.bz2 &amp;&amp; cd $PATH_ARCHIVE
+</code></pre>
+<h2 id="installation-des-prérequis"><a class="header" href="#installation-des-prérequis">Installation des prérequis</a></h2>
+<p>Pour s'exécuter correctement, babel (utilisé dans le backend) a besoin du fichier <code>libc.musl-x86_64.so.1</code>.
+Pour l'ajouter, vous trouverez deux packages musl-libc à installer, il faudra ensuite faire un lien symbolique, le tout via les commandes suivantes : </p>
+<pre><code class="language-bash">rpm -i ${PATH_ARCHIVE}/binaries/musl-filesystem-*.rpm
+rpm -i ${PATH_ARCHIVE}/binaries/musl-libc-*.rpm
+ln -s /usr/lib64/libc.so.6 /usr/lib64/libc.musl-x86_64.so.1
+</code></pre>
+<p>Le package <code>policycoreutils-python</code> sera requis si les commandes <code>checkmodule</code> et <code>semodule_package</code> ne sont pas disponibles.
+Le package <code>bzip2</code> sera requis pour décompresser les archives .tar.bz2</p>
+<h2 id="installation-de-mongodb"><a class="header" href="#installation-de-mongodb">Installation de MongoDB</a></h2>
+<p>Dans le dossier de binaires se trouve un fichier .rpm (for RPM Package Manager) compatible avec CentOS.
+Pour l'installer, rien de plus simple :</p>
+<pre><code class="language-bash">rpm -i ${PATH_ARCHIVE}/binaries/mongodb-org-server-*.rpm
+</code></pre>
+<p>Une fois installé, assurez vous que le service sera actif au démarrage avec la commande suivante.</p>
+<pre><code class="language-bash">systemctl start mongod # Lance le service
+systemctl enable mongod # Lance le service au démarrage
+</code></pre>
+<h3 id="configurer-selinux-pour-mongodb"><a class="header" href="#configurer-selinux-pour-mongodb">Configurer SELinux pour MongoDB</a></h3>
+<p>Une fois installé, il faut créer les règles SELinux suivantes :</p>
+<ul>
+<li><code>search</code> dans <code>mongod_t</code> &gt; <code>cgroup_t</code> &gt; <code>dir</code></li>
+<li><code>getattr</code>, <code>open</code>, <code>read</code> dans <code>mongod_t</code> &gt; <code>cgroup_t</code> &gt; <code>file</code></li>
+<li><code>open</code>, <code>read</code> dans <code>mongod_t</code> &gt; <code>proc_net_t</code> &gt; <code>file</code></li>
+<li><code>search</code> dans <code>mongod_t</code> &gt; <code>sysctl_net_t</code> &gt; <code>dir</code></li>
+</ul>
+<p>Ainsi que le fichier <code>mongodb_stargate.te</code> suivant : </p>
+<pre><code class="language-selinux">module mongodb_stargate 1.0;
+
+require {
+    type cgroup_t;
+    type proc_net_t;
+    type sysctl_net_t;
+    type mongod_t;
+    class file { getattr open read };
+    class dir search;
+}
+
+#============= mongod_t ==============
+
+allow mongod_t cgroup_t:dir search;
+allow mongod_t cgroup_t:file { getattr open read };
+allow mongod_t proc_net_t:file { open read };
+allow mongod_t sysctl_net_t:dir search;
+allow mongod_t sysctl_net_t:file { open getattr read };
+</code></pre>
+<p>Puis lancez les commandes suivantes : </p>
+<pre><code class="language-bash">checkmodule -M -m -o mongodb_stargate.mod mongodb_stargate.te
+semodule_package -o mongodb_stargate.pp -m mongodb_stargate.mod
+semodule -i mongodb_stargate.pp
+</code></pre>
+<h3 id="désactiver-les-transparent-huge-pages"><a class="header" href="#désactiver-les-transparent-huge-pages">Désactiver les <em>Transparent Huge Pages</em></a></h3>
+<p>Pour s'assurer de la configuration à chaque démarrage, créez un service systemd en ajoutant le contenu suivant au fichier <code>/etc/systemd/system/disable-transparent-huge-pages.service</code> :</p>
+<pre><code class="language-toml">[Unit]
+Description=Disable Transparent Huge Pages (THP)
+DefaultDependencies=no
+After=sysinit.target local-fs.target
+Before=mongod.service
+[Service]
+Type=oneshot
+ExecStart=/bin/sh -c 'echo never | tee /sys/kernel/mm/transparent_hugepage/enabled &gt; /dev/null'
+[Install]
+WantedBy=basic.target
+</code></pre>
+<p>Ensuite, lancez les commandes suivantes :</p>
+<pre><code class="language-bash">systemctl daemon-reload # Charge le fichier nouvellement créé
+systemctl start disable-transparent-huge-pages # Lance le service
+systemctl enable disable-transparent-huge-pages # Lance le service au démarrage
+</code></pre>
+<p>Afin de vérifier la bonne configuration, la commande suivante devrait retourner &quot;never&quot;</p>
+<pre><code class="language-bash">cat /sys/kernel/mm/transparent_hugepage/enabled
+</code></pre>
+<p><em>Sur CentOS 8 uniquement</em>, quelques configurations supplémentaires sont nécessaires pour le virtual-guest.</p>
+<p>Créez le répertoire avec la commande suivante : </p>
+<pre><code class="language-bash">mkdir -p /etc/tuned/virtual-guest-no-thp
+</code></pre>
+<p>Ajoutez ensuite le contenu suivant au fichier <code>/etc/tuned/virtual-guest-no-thp/tuned.conf</code> :</p>
+<pre><code class="language-toml">[main]
+include=virtual-guest
+[vm]
+transparent_hugepages=never
+</code></pre>
+<p>Activez enfin le profile tout juste créé avec cette commande : </p>
+<pre><code class="language-bash">tuned-adm profile virtual-guest-no-thp
+</code></pre>
+<h2 id="installation-de-nodejs"><a class="header" href="#installation-de-nodejs">Installation de NodeJS</a></h2>
+<p>Pour installer NodeJS depuis l'exécutable présent dans le dossier <code>binaries</code>, utilisez la commande suivante : </p>
+<pre><code class="language-bash">export NODE_TAR_NAME=$(basename ${PATH_ARCHIVE}/binaries/node-*.tar.xz .tar.xz)
+tar -C /usr/local/bin/ --strip-components=2 -xf ${PATH_ARCHIVE}/binaries/${NODE_TAR_NAME}.tar.xz ${NODE_TAR_NAME}/bin/
+tar -C /usr/local/lib/ --strip-components=2 -xf ${PATH_ARCHIVE}/binaries/${NODE_TAR_NAME}.tar.xz ${NODE_TAR_NAME}/lib/
+</code></pre>
+<p>Pour tester, le plus simple est de vérifier les versions via :</p>
+<pre><code class="language-bash">node --version
+npm --version
+</code></pre>
+<h2 id="installation-de-pm2"><a class="header" href="#installation-de-pm2">Installation de PM2</a></h2>
+<p>PM2 est un outil de gestion de processus pour NodeJS.</p>
+<pre><code class="language-bash">export NODE_LIB_PATH=$(npm list -g --depth=0 | head -1)
+tar -C $NODE_LIB_PATH/node_modules -xjf ${PATH_ARCHIVE}/binaries/pm2.tar.bz2 # Décompresse la librairie
+ln -s $NODE_LIB_PATH/node_modules/pm2/bin/pm2* /usr/local/bin/ # Créé des liens symboliques vers pm2
+</code></pre>
+<p>Vérifiez sa bonne installation avec la commande suivante :</p>
+<pre><code class="language-bash">pm2 -v
+</code></pre>
+<h3 id="ajouter-un-service-systemd"><a class="header" href="#ajouter-un-service-systemd">Ajouter un service systemd</a></h3>
+<p>Pour assurer le lancement au démarrage, nous allons là encore créer un service systemd, mais cette fois pm2 va être en mesure de le faire directement via la commande suivante : </p>
+<pre><code class="language-bash">pm2 startup # Va créer le fichier /etc/systemd/system/pm2-root.service
+</code></pre>
+<h3 id="configurer-selinux-pour-pm2"><a class="header" href="#configurer-selinux-pour-pm2">Configurer SELinux pour PM2</a></h3>
+<p>Pour faire communiquer correctement, il faut ajouter la règle suivante : </p>
+<ul>
+<li><code>open</code>,<code>read</code>,<code>unlink</code>,<code>write</code> dans <code>init_t</code> &gt; <code>admin_home_t</code> &gt; <code>file</code></li>
+</ul>
+<p>Pour cela, créez un fichier <code>pm2_systemd.te</code> avec le contenu suivant :</p>
+<pre><code class="language-selinux">module pm2_systemd 1.0;
+
+require {
+    type admin_home_t;
+    type init_t;
+    class file { open read unlink write };
+}
+
+#============= init_t ==============
+allow init_t admin_home_t:file { open read unlink write };
+</code></pre>
+<p>Il est alors possible d'ajouter la règle via les commandes suivantes : </p>
+<pre><code class="language-bash">checkmodule -M -m -o pm2_systemd.mod pm2_systemd.te
+semodule_package -o pm2_systemd.pp -m pm2_systemd.mod
+semodule -i pm2_systemd.pp
+</code></pre>
+<h2 id="installer-le-code-de-stargate"><a class="header" href="#installer-le-code-de-stargate">Installer le code de Stargate</a></h2>
+<p>Nous allons utiliser le dossier <code>/opt/stargate</code> pour placer le backend et le frontend du projet.
+Créons le dossier d'abord via <code>mkdir</code> :</p>
+<pre><code class="language-bash">mkdir -p /opt/stargate
+</code></pre>
+<h3 id="installer-le-backend"><a class="header" href="#installer-le-backend">Installer le backend</a></h3>
+<p>Pour installer le backend, nous allons : </p>
+<ul>
+<li>Déplacer le backend dans son répertoire</li>
+<li>Nous placer dans ce répertoire</li>
+<li>Lancer un rebuild des modules <code>npm</code> pour s'assurer qu'ils soient compatibles avec le système linux et la version de node.</li>
+<li>Exécuter <code>npm run migrations:up --if-present</code> afin d'exécuter d'éventuelles migrations automatiques</li>
+<li>Ajouter dans pm2</li>
+</ul>
+<pre><code class="language-bash">mv ${PATH_ARCHIVE}/stargate_backend /opt/stargate/backend
+cd /opt/stargate/backend
+npm rebuild
+HOST=127.0.0.1 PROMETHEUS_EXPORTER=0 pm2 start npm --name 'backend' -- start
+</code></pre>
+<h4 id="personnaliser-la-configuration"><a class="header" href="#personnaliser-la-configuration">Personnaliser la configuration</a></h4>
+<p>La configuration se fait via des variables d'environnement. Il suffit de les exporter dans le shell courant, avant de mettre à jour les variables prises en compte par <code>pm2</code>.</p>
+<p>Il est ensuite possible ensuite de lister les variables d'environnement prises en compte avec <code>pm2 env</code></p>
+<pre><code class="language-bash">export MONGODB=mongodb://localhost:27017/stargate
+export MAIL__DEFAULT_FROM= # Expéditeur des emails
+export MAIL__TRANSPORTER__HOST= # Nom de domaine du serveur mail
+export MAIL__TRANSPORTER__PORT= # Port du serveur mail
+export MAIL__TRANSPORTER__AUTH__PASS= # Mot de passe pour l'authentification mail
+export MAIL__TRANSPORTER__AUTH__USER= # Utilisateur pour l'authentification mail
+export TOKEN__SECRET=$(tr -dc 'A-Za-z0-9!&quot;#$%&amp;'\''()*+,-./:;&lt;=&gt;?@[\]^_`{|}~' &lt;/dev/urandom | head -c 128 ) # Va être utilisé comme preuve cryptographique pour les jetons JWT
+export WEBSITE_URL=https://${FRONTEND_DOMAIN}
+pm2 restart backend --update-env
+pm2 env $(pm2 ls | grep backend | awk -F'│' '{print $2}') # Vérifier
+</code></pre>
+<h3 id="installer-le-frontend"><a class="header" href="#installer-le-frontend">Installer le frontend</a></h3>
+<p>Pour installer le frontend, nous allons :</p>
+<ul>
+<li>Déplacer le frontend dans son répertoire</li>
+<li>Nous placer dans ce répertoire</li>
+<li>Lancer un rebuild des modules <code>npm</code> pour s'assurer qu'ils soient compatibles avec le système linux et la version de node.</li>
+<li>Ajouter dans pm2</li>
+</ul>
+<pre><code class="language-bash">mv ${PATH_ARCHIVE}/stargate_frontend /opt/stargate/frontend
+cd /opt/stargate/frontend
+npm rebuild
+PORT=3001 HOST=127.0.0.1 PROMETHEUS_HOST=127.0.0.1 pm2 start npm --name 'frontend' -- start -- --host 127.0.0.1
+</code></pre>
+<h4 id="mettre-à-jour-lapi-url"><a class="header" href="#mettre-à-jour-lapi-url">Mettre à jour l'API URL</a></h4>
+<p>La configuration se fait via des variables d'environnement. Il suffit de les exporter dans le shell courant, avant de mettre à jour les variables prises en compte par <code>pm2</code>.</p>
+<p>Il est ensuite possible ensuite de lister les variables d'environnement prises en compte avec <code>pm2 env</code></p>
+<pre><code class="language-bash">export API_URL=https://${BACKEND_DOMAIN}/api
+pm2 restart frontend --update-env
+pm2 env $(pm2 ls | grep frontend | awk -F'│' '{print $2}') # Vérifier
+</code></pre>
+<h2 id="nginx"><a class="header" href="#nginx">Nginx</a></h2>
+<p>Installons nginx avec <code>rpm -i ${PATH_ARCHIVE}/binaries/nginx-*.rpm</code>.</p>
+<h3 id="configuration"><a class="header" href="#configuration">Configuration</a></h3>
+<p>Éditons le fichier <code>/etc/nginx/nginx.conf</code> comme suit :</p>
+<pre><code class="language-nginx"># For more information on configuration, see:
+user nginx;
+worker_processes auto;
+error_log /var/log/nginx/error.log;
+pid /run/nginx.pid;
+
+# Load dynamic modules. See /usr/share/doc/nginx/README.dynamic.
+include /usr/share/nginx/modules/*.conf;
+
+events {
+    worker_connections 1024;
+}
+
+http {
+    log_format  main  '$remote_addr - $remote_user [$time_local] &quot;$request&quot; '
+                      '$status $body_bytes_sent &quot;$http_referer&quot; '
+                      '&quot;$http_user_agent&quot; &quot;$http_x_forwarded_for&quot;';
+
+    access_log  /var/log/nginx/access.log  main;
+
+    sendfile            on;
+    tcp_nopush          on;
+    tcp_nodelay         on;
+    keepalive_timeout   65;
+    types_hash_max_size 2048;
+
+    include             /etc/nginx/mime.types;
+    default_type        application/octet-stream;
+
+    include /etc/nginx/conf.d/*.conf;
+}
+</code></pre>
+<p>Pour la configuration du backend, éditons le fichier <code>/etc/nginx/conf.d/backend.conf</code><br />
+Attention, modifiez bien le $BACKEND_DOMAIN dans le fichier avec le nom de domaine du frontend</p>
+<pre><code class="language-nginx">server {
+  listen 80;
+  server_name $BACKEND_DOMAIN;
+  location / {
+    proxy_set_header X-Real-IP $remote_addr;
+    proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+    proxy_set_header X-Forwarded-Proto $scheme;
+    proxy_set_header Host $host;
+    proxy_set_header X-NginX-Proxy true;
+
+    proxy_pass http://localhost:3000;
+    proxy_redirect http://localhost:3000/ http://$server_name/;
+  }
+}
+</code></pre>
+<p>Pour la configuration du frontend, éditons le fichier <code>/etc/nginx/conf.d/frontend.conf</code><br />
+Attention, modifiez bien le $FRONTEND_DOMAIN dans le fichier avec le nom de domaine du frontend</p>
+<pre><code class="language-nginx">server {
+  listen 80;
+  server_name $FRONTEND_DOMAIN;
+  location / {
+    proxy_set_header X-Real-IP $remote_addr;
+    proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+    proxy_set_header X-Forwarded-Proto $scheme;
+    proxy_set_header Host $host;
+    proxy_set_header X-NginX-Proxy true;
+
+    proxy_pass http://localhost:3001;
+    proxy_redirect http://localhost:3001/ http://$server_name/;
+  }
+}
+</code></pre>
+<h3 id="configurons-selinux"><a class="header" href="#configurons-selinux">Configurons SELinux</a></h3>
+<p>Pour nginx, le plus simple est de configurer SELinux via la commande <code>setsebool -P httpd_can_network_connect on</code></p>
+
+                    </main>
+
+                    <nav class="nav-wrapper" aria-label="Page navigation">
+                        <!-- Mobile navigation buttons -->
+                                                    <a rel="prev" href="03-setup.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                                <i class="fa fa-angle-left"></i>
+                            </a>
+                        
+                                                    <a rel="next" href="03-setup-02-dev.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                                <i class="fa fa-angle-right"></i>
+                            </a>
+                        
+                        <div style="clear: both"></div>
+                    </nav>
+                </div>
+            </div>
+
+            <nav class="nav-wide-wrapper" aria-label="Page navigation">
+                                    <a rel="prev" href="03-setup.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                        <i class="fa fa-angle-left"></i>
+                    </a>
+                
+                                    <a rel="next" href="03-setup-02-dev.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                        <i class="fa fa-angle-right"></i>
+                    </a>
+                            </nav>
+
+        </div>
+
+        
+        
+        
+                <script type="text/javascript">
+            window.playground_copyable = true;
+        </script>
+        
+        
+                <script src="elasticlunr.min.js" type="text/javascript" charset="utf-8"></script>
+        <script src="mark.min.js" type="text/javascript" charset="utf-8"></script>
+        <script src="searcher.js" type="text/javascript" charset="utf-8"></script>
+        
+        <script src="clipboard.min.js" type="text/javascript" charset="utf-8"></script>
+        <script src="highlight.js" type="text/javascript" charset="utf-8"></script>
+        <script src="book.js" type="text/javascript" charset="utf-8"></script>
+
+        <!-- Custom JS scripts -->
+        
+        
+    </body>
+</html>
