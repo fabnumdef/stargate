@@ -1,0 +1,73 @@
+name: Pandoc
+
+on: push
+
+jobs:
+  pdf:
+    runs-on: [ self-hosted, ubuntu-latest ]
+    steps:
+      - uses: actions/checkout@v2
+      - name: create file list
+        id: files_list
+        run: |
+          mkdir output
+          echo "::set-output name=files::$(printf '"%s" ' src/??-*.md)"
+      - uses: docker://pandoc/latex:2.9
+        with:
+          args: >-
+            --resource-path src
+            --toc --toc-depth=2
+            --webtex
+            -f markdown --pdf-engine=xelatex --listings
+            --metadata-file=metadata.pandoc.yml
+            --output=output/result.pdf
+            ${{ steps.files_list.outputs.files }}
+      - uses: actions/upload-artifact@master
+        with:
+          name: pdf
+          path: output
+  docx:
+    runs-on: [ self-hosted, ubuntu-latest ]
+    steps:
+      - uses: actions/checkout@v2
+      - name: create file list
+        id: files_list
+        run: |
+          mkdir output
+          echo "::set-output name=files::$(printf '"%s" ' src/??-*.md)"
+      - uses: docker://pandoc/core:2.9
+        with:
+          args: >-
+            --resource-path src
+            --toc --toc-depth=2
+            --webtex
+            --metadata-file=metadata.pandoc.yml
+            --output=output/result.docx
+            ${{ steps.files_list.outputs.files }}
+      - uses: actions/upload-artifact@master
+        with:
+          name: docx
+          path: output
+  epub:
+    runs-on: [ self-hosted, ubuntu-latest ]
+    steps:
+      - uses: actions/checkout@v2
+      - name: create file list
+        id: files_list
+        run: |
+          mkdir output
+          echo "::set-output name=files::$(printf '"%s" ' src/??-*.md)"
+      - uses: docker://pandoc/core:2.9
+        with:
+          args: >-
+            --resource-path src
+            --toc --toc-depth=2
+            --webtex
+            --epub-cover-image=src/images/cover.png
+            --metadata-file=metadata.pandoc.yml
+            --output=output/result.epub
+            ${{ steps.files_list.outputs.files }}
+      - uses: actions/upload-artifact@master
+        with:
+          name: epub
+          path: output
